@@ -1,0 +1,8 @@
+Workspaces 1.0 Workspaces.qml
+Date 1.0 Date.qml
+Time 1.0 Time.qml
+CPU 1.0 CPU.qml
+Memory 1.0 Memory.qml
+SystemTray 1.0 SystemTray.qml
+Icon 1.0 Icon.qml
+singleton Datetime 1.0 Datetime.qml

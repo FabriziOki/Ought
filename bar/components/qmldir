@@ -1,0 +1,9 @@
+Background 1.0 Background.qml
+BarBlock 1.0 BarBlock.qml
+BarText 1.0 BarText.qml
+Content 1.0 Content.qml
+LoadingCircle 1.0 LoadingCircle.qml
+NMConnecting 1.0 NMConnecting.qml
+ToggleSwitch 1.0 ToggleSwitch.qml
+WavyCircle 1.0 WavyCircle.qml
+Wrapper 1.0 Wrapper.qml

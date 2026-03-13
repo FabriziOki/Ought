@@ -1,0 +1,10 @@
+- [ ] Climate Widget
+- [ ] Merge Time, Date and Weather in a sigle block 
+- [ ] Define middle popup content
+- [ ] Fix slider bug on Sound
+- [ ] Limited Connectivity Icon Logic
+- [ ] GPU Widget
+- [ ] Syncthing Widget
+- [ ] Loading WiFi Icon
+- [ ] Improve Music Block Icon
+- [ ] Fix the "square" numbers (numbers of same program)
