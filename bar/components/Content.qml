@@ -84,7 +84,7 @@ Item {
                 from: ""; to: "active"
                 SequentialAnimation {
                     PropertyAction  { target: popout; property: "active" }
-                    NumberAnimation { properties: "opacity,scale"; duration: 150; easing.type: Easing.OutQuad }
+                    NumberAnimation { properties: "opacity,scale"; duration: 100; easing.type: Easing.OutQuad }
                 }
             },
             Transition {

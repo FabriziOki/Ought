@@ -13,66 +13,14 @@ Item {
     // ── Required by Content.qml ───────────────────────────────────────────────
     required property Item wrapper
 
-    // ── Local state ───────────────────────────────────────────────────────────
+    // ── Icon paths ────────────────────────────────────────────────────────────
     property string iconPath:  "/home/oki/.local/share/icons/Gruvbox-Plus-Dark/panel/22/"
     property string iconPath2: "/home/oki/.local/share/icons/Gruvbox-Plus-Dark/status/48/"
     property string iconPath3: "/home/oki/.local/share/icons/Gruvbox-Plus-Dark/emblems/48/"
 
-    property string connectionStatus: "disconnected"
-    property string ssid:             ""
-    property string security:         ""
-    property int    signalStrength:   0
-    property string wiredInterface:   ""
-    property string wiredStatus:      "disconnected"
-
-    property var _scanBuffer: []
-    property var networks:    []
-    property var wifiDevice: {
-        const devices = Networking.devices.values;
-        let wifi = devices.find(w => w.type === DeviceType.Wifi)        
-        if (wifi) return wifi;
-        return null
-    }
-    property var currentWifiNetwork: {
-        const wnets = wifiDevice.networks.values;
-        let cwn = wnets.find(c => c.state === NetworkState.Connected)
-        if (cwn) return cwn;
-        return null;
-    }
-
-    // ── Size ──────────────────────────────────────────────────────────────────
-    implicitWidth:  360
-    implicitHeight: 400
-
-    // ── Processes ─────────────────────────────────────────────────────────────
-    Process { id: wifiCmd }
-
-    Process {
-        id: wifiStateChecker
-        command: ["nmcli", "radio", "wifi"]
-        running: true
-        stdout: SplitParser {
-            onRead: data => wifiToggle.checked = data.trim() === "enabled"
-        }
-    }
-
-    Process {
-        id: wifiStatusProc
-        command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status | grep ':wifi' | grep -v 'p2p'"]
-        running: true
-        stdout: SplitParser {
-            onRead: data => {
-                if (data) {
-                    const parts        = data.split(":")
-                    root.connectionStatus = parts[2] || "unavailable"
-                    root.ssid             = parts[3] || ""
-                } else {
-                    root.connectionStatus = "disconnected"
-                    root.ssid             = ""
-                }
-            }
-        }
-    }
+    // ── Ethernet (Process — not yet in native API) ────────────────────────────
+    property string wiredInterface: ""
+    property string wiredStatus:    "disconnected"
 
     Process {
         id: ethernetStatusProc
@@ -82,8 +30,8 @@ Item {
             onRead: data => {
                 if (data) {
                     const parts         = data.split(":")
-                    root.wiredInterface  = parts[0] || ""
-                    root.wiredStatus     = parts[2] || "disconnected"
+                    root.wiredInterface = parts[0] || ""
+                    root.wiredStatus    = parts[2] || "disconnected"
                 } else {
                     root.wiredStatus = "disconnected"
                 }
@@ -91,54 +39,83 @@ Item {
         }
     }
 
-    Process {
-        id: wifiSignal
-        command: ["sh", "-c", "nmcli -t -f IN-USE,SIGNAL,SECURITY dev wifi | grep '*'"]
+    Timer {
+        interval: 5000
         running: true
-        stdout: SplitParser {
-            onRead: data => {
-                if (data) {
-                    const parts        = data.split(":")
-                    root.signalStrength = parseInt(parts[1]) || 0
-                    root.security       = parts[2] || ""
-                } else {
-                    root.signalStrength = 0
-                }
-            }
-        }
+        repeat: true
+        onTriggered: ethernetStatusProc.running = true
     }
 
     Process {
-        id: scanProc
-        command: ["sh", "-c", "nmcli -t -f SSID,SIGNAL,SECURITY dev wifi list --rescan yes"]
-        running: root.wrapper.hasCurrent && root.wrapper.currentName === "network"
-        onRunningChanged: { if (running) root._scanBuffer = [] }
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                const parts = data.split(":")
-                const ssid  = parts[0]
-                if (ssid === root.ssid) return
-                if (ssid && ssid.length > 0 && !root._scanBuffer.some(n => n.ssid === ssid)) {
-                    root._scanBuffer.push({ ssid, signal: parseInt(parts[1]) || 0, security: parts[2] || "" })
-                    root._scanBuffer.sort((a, b) => b.signal - a.signal)
-                    root.networks = root._scanBuffer.slice()
-                }
-            }
-        }
+        id: wifiToggleCmd
+        onExited: wifiStateChecker.running = true   // re-check state after toggling
+    }
+
+
+    // ── Wifi — native API ─────────────────────────────────────────────────────
+    property var wifiDevice: {
+        const devices = Networking.devices.values
+        return devices.find(d => d.type === DeviceType.Wifi) ?? null
+    }
+
+    property var currentWifiNetwork: {
+        const nets = wifiDevice?.networks?.values ?? []
+        return nets.find(n => n.state === NetworkState.Connected) ?? null
+    }
+
+    // Null-guarded connection status
+    readonly property string connectionStatus: {
+        if (!wifiDevice) return "unavailable"
+        const s = wifiDevice.state
+        if (s === DeviceConnectionState.Connected)    return "connected"
+        if (s === DeviceConnectionState.Connecting)   return "connecting"
+        if (s === DeviceConnectionState.Disconnected) return "disconnected"
+        return "unavailable"
+    }
+
+    readonly property string ssid:           currentWifiNetwork?.name ?? ""
+    readonly property int    signalStrength: Math.round((currentWifiNetwork?.signalStrength ?? 0) * 100)
+
+    property bool isWifiConnected: wifiDevice?.state === DeviceConnectionState.Connected ?? false
+
+    // ── Available networks — at root so onAvailableNetworksChanged fires ─────
+    property var availableNetworks: {
+        const nets = wifiDevice?.networks?.values ?? []
+        return nets
+            .filter(n => n.state !== NetworkState.Connected)
+            .sort((a, b) => b.signalStrength - a.signalStrength)
+    }
+
+    // ── Scan state ────────────────────────────────────────────────────────────
+    property bool scanning: false
+
+    function triggerScan() {
+        if (!wifiDevice) return
+        root.scanning = true
+        wifiDevice.scannerEnabled = true
+        scanTimeout.restart()
     }
 
     Timer {
-        interval: 500
-        running: true
-        repeat: true
-        onTriggered: {
-            wifiStatusProc.running     = true
-            ethernetStatusProc.running = true
-            wifiSignal.running         = true
-            wifiStateChecker.running   = true
+        id: scanTimeout
+        interval: 4000
+        onTriggered: root.scanning = false
+    }
+
+    // Stop early if results arrive before timeout
+    onAvailableNetworksChanged: {
+        if (availableNetworks.length > 0) {
+            root.scanning = false
+            scanTimeout.stop()
         }
     }
+
+    // Auto-scan when popup opens
+    onVisibleChanged: if (visible) root.triggerScan()
+
+    // ── Size ──────────────────────────────────────────────────────────────────
+    implicitWidth:  320
+    implicitHeight: 400
 
     // ── UI ────────────────────────────────────────────────────────────────────
     ColumnLayout {
@@ -170,10 +147,8 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
-
                 ColumnLayout {
                     Layout.alignment: Qt.AlignVCenter
-                    
                     spacing: -15
 
                     // ── Top Row: "Ethernet" + Status ──
@@ -191,18 +166,17 @@ Item {
                             Behavior on font.weight { NumberAnimation { duration: 200; easing.type: Easing.InOutBounce } }
                         }
 
-                        // Wrapper to animate the dot and status text horizontally
                         RowLayout {
                             spacing: 8
                             opacity: root.wiredStatus === "disconnected" ? 0 : 1
                             Layout.preferredWidth: root.wiredStatus === "disconnected" ? 0 : implicitWidth
-                            clip: true // Prevents text from spilling outside while width shrinks
-                            
+                            clip: true
+
                             Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                             Behavior on Layout.preferredWidth { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                             Text {
-                                text: ""
+                                text: ""
                                 color: root.wiredStatus === "connected" ? "#79740e" : "#80bdae93"
                                 Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
                                 font.family: "JetBrains Mono"
@@ -229,12 +203,12 @@ Item {
                     // ── Bottom Row: Interface Details ──
                     RowLayout {
                         opacity: root.wiredStatus === "disconnected" ? 0 : 1
-                        
+
                         Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                         Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                         LoadingCircle {
-                            id: loadCirc
+                            implicitWidth: 24; implicitHeight: 24   
                             Layout.alignment: Qt.AlignVCenter
                             Layout.rightMargin: 10
                             visible: root.wiredStatus === "unavailable" || root.wiredStatus === "connecting (getting IP configuration)"
@@ -300,21 +274,25 @@ Item {
                 Item { Layout.fillWidth: true }
 
                 LoadingCircle {
+                    implicitWidth: 24; implicitHeight: 24   
                     Layout.alignment: Qt.AlignVCenter
                     Layout.rightMargin: 10
-                    visible: wifiCmd.running || (root.connectionStatus !== "connected" && root.connectionStatus !== "unavailable")
+                    visible: root.connectionStatus === "connecting"
                     running: visible
                 }
 
                 ToggleSwitch {
                     id: wifiToggle
+                    checked: root.wifiDevice.state === DeviceConnectionState.Connected
                     onToggled: newState => {
-                        wifiCmd.command = ["nmcli", "radio", "wifi", newState ? "on" : "off"]
-                        wifiCmd.running = true
+                        wifiToggleCmd.command = ["nmcli", "radio", "wifi", newState ? "on" : "off"]
+                        wifiToggleCmd.running = true
                     }
                 }
             }
         }
+
+        Item { Layout.margins: 2.5 }
 
         // ── Active connection row ─────────────────────────────────────────────
         Rectangle {
@@ -351,34 +329,37 @@ Item {
 
                 Item { Layout.rightMargin: 5 }
 
-                Text {
-                    text: {
-                        if (root.connectionStatus === "connected" && root.ssid !== "") return root.ssid
-                        if (root.connectionStatus !== "connected" && root.connectionStatus !== "unavailable") return "Connecting"
-                        return "Unavailable"
+                Column {
+                    spacing: -2.5                    
+
+                    Text {
+                        text: {
+                            if (root.connectionStatus === "connected" && root.ssid !== "") return root.ssid
+                            if (root.connectionStatus === "connecting") return "Connecting"
+                            return "Unavailable"
+                        }
+                        color: root.connectionStatus === "connected" ? "#bdae93" : "#80bdae93"
+                        font.family: "JetBrains Mono"
+                        font.pixelSize: 20
+                        font.weight: root.connectionStatus === "connected" ? 400 : 200
                     }
-                    color: root.connectionStatus === "connected" ? "#bdae93" : "#80bdae93"
-                    font.family: "JetBrains Mono"
-                    font.pixelSize: 22
-                    font.weight: root.connectionStatus === "connected" ? 400 : 200
-                }
 
+                    Text {
+                        text: root.connectionStatus === "connected" ? WifiSecurityType.toString(root.currentWifiNetwork.securiy) : ""
+                        color: "#80a89984"
+                        font.family: "JetBrains Mono"
+                        font.pixelSize: 12
+                        font.weight: 200
+                    }
+                }
                 Item { Layout.fillWidth: true }
-
-                Text {
-                    text: root.connectionStatus === "connected" && root.ssid !== "" ? root.security : ""
-                    color: root.connectionStatus === "connected" ? "#a89984" : "#80a89984"
-                    font.family: "JetBrains Mono"
-                    font.pixelSize: 18
-                    font.weight: 200
-                }
 
                 Image {
                     source: `file://${root.iconPath3}emblem-locked.svg`
                     sourceSize: Qt.size(28, 28)
                     fillMode: Image.PreserveAspectFit
                     smooth: true
-                    opacity: root.connectionStatus === "connected" ? 1 : 0
+                    opacity: root.connectionStatus === "connected" && root.currentWifiNetwork.security ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 150 } }
                 }
 
@@ -412,14 +393,10 @@ Item {
             Item { Layout.fillWidth: true }
 
             MouseArea {
-                width: 24; height: 24
+                implicitHeight: 24; implicitWidth: 24
                 cursorShape: Qt.PointingHandCursor
                 hoverEnabled: true
-                onClicked: {
-                    root._scanBuffer = []
-                    root.networks    = []
-                    scanProc.running = true
-                }
+                onClicked: root.triggerScan()
                 Image {
                     source: `file://${root.iconPath3}emblem-dropbox-syncing.svg`
                     sourceSize: Qt.size(24, 24)
@@ -433,25 +410,28 @@ Item {
 
         // ── Network list ──────────────────────────────────────────────────────
         Item {
+            id: networkListArea
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // Wi-Fi off
+            // Wi-Fi radio off
             Text {
                 anchors.centerIn: parent
                 text: "Wi-Fi is turned off"
                 color: "#80a89984"
                 font.family: "JetBrains Mono"
                 font.pixelSize: 16
-                visible: !wifiToggle.checked
+                visible: !root.isWifiConnected
             }
 
-            // Scanning
+            // Scanning — uses native scannerEnabled
             RowLayout {
                 anchors.centerIn: parent
                 spacing: 10
-                visible: wifiToggle.checked && scanProc.running && root.networks.length === 0
-                LoadingCircle { width: 24; height: 24; running: parent.visible }
+                visible: root.scanning
+
+                LoadingCircle { implicitHeight: 24; implicitWidth: 24; running: parent.visible }
+
                 Text {
                     text: "Scanning..."
                     color: "#80a89984"
@@ -460,17 +440,25 @@ Item {
                 }
             }
 
-            // List
             ListView {
                 anchors.fill: parent
                 clip: true
                 spacing: 2.5
-                model: root.networks
-                visible: wifiToggle.checked && root.networks.length > 0
+                model: root.availableNetworks
+                visible: !root.scanning
+                      && root.isWifiConnected
+                      && root.availableNetworks.length > 0
 
                 delegate: Rectangle {
+                    id: netItem
                     required property var modelData
                     required property int index
+
+                    // Hoist here so children can reference by id — avoids
+                    // fragile parent.parent chains with pragma ComponentBehavior: Bound
+                    readonly property int  sig:       Math.round((modelData.signalStrength ?? 0) * 100)
+                    readonly property bool isSecured: (modelData.security ?? WifiSecurityType.Open) !== WifiSecurityType.Open
+
                     width: ListView.view.width
                     height: Theme.get.popupItemHeight
                     color: Theme.get.popupItemBgOnColor
@@ -479,17 +467,24 @@ Item {
                     bottomLeftRadius:  index === ListView.view.count - 1 ? 15 : 5
                     bottomRightRadius: index === ListView.view.count - 1 ? 15 : 5
 
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: netItem.modelData.connectTo()
+                    }
+
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 10; anchors.rightMargin: 10
 
                         Image {
                             source: {
-                                if (modelData.signal >= 81) return `file://${root.iconPath}network-wireless-100.svg`
-                                if (modelData.signal >= 61) return `file://${root.iconPath}network-wireless-80.svg`
-                                if (modelData.signal >= 41) return `file://${root.iconPath}network-wireless-60.svg`
-                                if (modelData.signal >= 21) return `file://${root.iconPath}network-wireless-40.svg`
-                                if (modelData.signal >= 5)  return `file://${root.iconPath}network-wireless-20.svg`
+                                const s = netItem.sig
+                                if (s >= 81) return `file://${root.iconPath}network-wireless-100.svg`
+                                if (s >= 61) return `file://${root.iconPath}network-wireless-80.svg`
+                                if (s >= 41) return `file://${root.iconPath}network-wireless-60.svg`
+                                if (s >= 21) return `file://${root.iconPath}network-wireless-40.svg`
+                                if (s >= 5)  return `file://${root.iconPath}network-wireless-20.svg`
                                 return `file://${root.iconPath}network-wireless-00.svg`
                             }
                             sourceSize: Qt.size(32, 32)
@@ -502,15 +497,16 @@ Item {
                         ColumnLayout {
                             spacing: 0
                             Layout.alignment: Qt.AlignVCenter
+
                             Text {
-                                text: modelData.ssid
+                                text: netItem.modelData.name
                                 color: "#bdae93"
                                 font.family: "JetBrains Mono"
                                 font.pixelSize: 16
                             }
                             Text {
-                                text: root.connectionStatus === "connected" && root.ssid !== "" ? root.security : ""
-                                color: root.connectionStatus === "connected" ? "#a89984" : "#80a89984"
+                                text: netItem.isSecured ? WifiSecurityType.toString(netItem.modelData.security) : "Open"
+                                color: "#80a89984"
                                 font.family: "JetBrains Mono"
                                 font.pixelSize: 12
                                 font.weight: 200
@@ -520,7 +516,7 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         Image {
-                            source: modelData.security
+                            source: netItem.isSecured
                                 ? `file://${root.iconPath3}emblem-locked.svg`
                                 : `file://${root.iconPath3}emblem-unlocked.svg`
                             sourceSize: Qt.size(28, 28)

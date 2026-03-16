@@ -40,12 +40,6 @@ Item {
     implicitHeight: nonAnimHeight
 
     visible: implicitHeight > 0
-    // clip: true
-
-    Behavior on implicitWidth {
-        enabled: false
-        NumberAnimation { duration: root.animationDuration ; easing.type: root.easingType }
-    }
 
     Behavior on implicitHeight {
         enabled: root.implicitWidth > 0
@@ -55,8 +49,8 @@ Item {
     Background {
         isAtLeftEdge: root.isAtLeftEdge
         isAtRightEdge: root.isAtRightEdge
-        opacity: root.hasCurrent ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: root.animationDuration ; easing.type: root.easingType } }
+        opacity: root.hasCurrent ? 1 : 0.2
+        Behavior on opacity { NumberAnimation { duration: root.animationDuration / 2 ; easing.type: root.easingType } }
     }
     // ── Item for Clipping Content ────────────────────────────────────────────────────────
     Item {
@@ -84,17 +78,17 @@ Item {
             transitions: [
                 Transition {
                     from: ""; to: "active"
-                    SequentialAnimation {
-                        PropertyAction  { property: "active" }
-                        NumberAnimation { properties: "opacity,scale"; duration: root.animationDuration ; easing.type: root.easingType }
-                    }
+                    // SequentialAnimation {
+                    //     PropertyAction  { property: "active" }
+                    //     NumberAnimation { properties: "opacity,scale"; duration: root.animationDuration ; easing.type: root.easingType }
+                    // }
                 },
                 Transition {
                     from: "active"; to: ""
-                    SequentialAnimation {
-                        NumberAnimation { properties: "opacity,scale"; duration: root.animationDuration ; easing.type: root.easingType }
-                        PropertyAction  { property: "active" }
-                    }
+                    // SequentialAnimation {
+                    //     NumberAnimation { properties: "opacity,scale"; duration: root.animationDuration ; easing.type: root.easingType }
+                    //     PropertyAction  { property: "active" }
+                    // }
                 }
             ]
         }
