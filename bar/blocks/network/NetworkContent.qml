@@ -172,17 +172,14 @@ Item {
 
 
                 ColumnLayout {
-                    // Center the entire column vertically relative to the left-side icon
                     Layout.alignment: Qt.AlignVCenter
                     
-                    // Smoothly transition spacing when expanding/collapsing
-                    spacing: root.wiredStatus === "disconnected" ? 0 : 2
-                    Behavior on spacing { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                    spacing: -15
 
                     // ── Top Row: "Ethernet" + Status ──
                     RowLayout {
                         Layout.alignment: Qt.AlignVCenter
-                        spacing: 8
+                        spacing: 10
 
                         Text {
                             text: "Ethernet"
@@ -231,10 +228,7 @@ Item {
 
                     // ── Bottom Row: Interface Details ──
                     RowLayout {
-                        // Collapse height and fade out completely when disconnected
                         opacity: root.wiredStatus === "disconnected" ? 0 : 1
-                        Layout.preferredHeight: root.wiredStatus === "disconnected" ? 0 : implicitHeight
-                        clip: true
                         
                         Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                         Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }

@@ -10,6 +10,7 @@ import "blocks/bluetooth"    as Bluetooth
 import "blocks/battery"      as Battery
 import "blocks/sound"        as Sound
 import "blocks/notification" as Notification
+import "blocks/middle"       as Middle
 import "components"
 import "../"
 
@@ -109,8 +110,7 @@ Scope {
                     spacing: 0
                     anchors.centerIn: parent
 
-                    Blocks.Date {}
-                    Blocks.Time {}
+                    Middle.Middle {}
                 }
 
                 // Right side
@@ -121,8 +121,6 @@ Scope {
                     anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
 
-                    // Each block that has a popup exposes a `name` property
-                    //. so checkPopout() can identify it
                     // Blocks.Test {id: test}
                     Music.Music     { id: musicBlock }
                     Sound.Sound { id: soundBlock }
@@ -131,6 +129,24 @@ Scope {
                     Item { Layout.leftMargin: 8 }
                     Battery.Battery { id: batteryBlock }
                     Notification.Notification { id: notificationBlock; rightPadding: 10 }
+                }
+            }
+
+            // ── Toast: driven by NotificationManager.active ──────────────
+            Connections {
+                target: NotificationManager
+
+                function onActiveChanged() {
+                    if (NotificationManager.active) {
+                        popouts.currentName   = "toast"
+                        // popouts.currentCenter =  notificationBlock.mapToItem(allBlocks, 0, 0).x + notificationBlock.width / 2
+                        popouts.currentCenter =  bar.width / 2
+                        popouts.hasCurrent    = true
+                    } else {
+                        if (popouts.currentName === "toast") {
+                            popouts.hasCurrent = false
+                        }
+                    }
                 }
             }
 

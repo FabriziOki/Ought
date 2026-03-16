@@ -25,10 +25,10 @@ Item {
         anchors.fill: parent
 
         // ── Register your popouts here ────────────────────────────────────────
-        // Popout {
-        //     name: "toast"
-        //     sourceComponent: Notification.ToastContent {}
-        // }
+        Popout {
+            name: "toast"
+            sourceComponent: Component { Notification.ToastContent { wrapper: root.wrapper } }
+        }
 
         Popout {
             name: "notification"

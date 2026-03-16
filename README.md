@@ -1,8 +1,6 @@
 # Ought
 
-A personal window manager shell for Hyprland built with Quickshell. It includes bar, OSD and notifications
-
----
+A personal window manager shell for Hyprland built with Quickshell. It includes bar, OSD and notifications.
 
 ## Installation
 
@@ -10,7 +8,7 @@ A personal window manager shell for Hyprland built with Quickshell. It includes 
 git clone https://github.com/FabriziOki/ought.git ~/.config/quickshell/ought
 qs -p ~/.config/quickshell/ought  
 ```
-> Design and tested in Hyprland. Behavior on other window managers in unknown
+> Designed and tested for Hyprland. Behavior on other window managers in unknown.
 
 ## Structure
 

@@ -176,11 +176,11 @@ RowLayout {
                   width: 10
                   height: width
                   radius: width / 2
-                  color: "black"
-                  opacity: 0.8
+                  color: "transparent"
+                  opacity: 1
                   BarText {
                     text: modelData.mult
-                    pointSize: 10 
+                    pointSize: isActive && isOpen ? 10 : 8
                     dim: !isActive
                     style: Text.Outline
                   }
