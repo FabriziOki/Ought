@@ -7,7 +7,7 @@ import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 
 Text {
-  property string mainFont: "JetBrains Mono"
+  property string mainFont: "JetBrainsMono Nerd Font"
   property string symbolFont: "JetBrainsMono Nerd Font"
   property int pointSize: 12
   property int symbolSize: pointSize * 1.37

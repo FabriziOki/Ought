@@ -90,7 +90,7 @@ Item {
         Text {
           text: `${Math.round(volumeSlider.value)}%`
           color: "#ebdbb2"
-          font.family: "JetBrains Mono"
+          font.family: "JetBrainsMono Nerd Font"
           font.pixelSize: 22
         }
 

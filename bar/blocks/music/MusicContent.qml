@@ -127,7 +127,7 @@ Item {
                     text: root.activePlayer?.trackTitle ?? "No Music Playing"
                     color: "#ebdbb2"
                     font.pixelSize: 20
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     Layout.fillWidth: true
                     font.weight: 600
                 }
@@ -137,7 +137,7 @@ Item {
                     text: root.activePlayer?.trackArtists  ?? ""
                     color: "#d5c4a1"
                     font.pixelSize: 18
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     Layout.fillWidth: true
                     font.weight: 200
                 }
@@ -165,7 +165,7 @@ Item {
                         text: root.activePlayer?.identity ?? "Unknown Player"
                         color: "#ebdbb2"
                         font.pixelSize: 14
-                        font.family: "JetBrains Mono"
+                        font.family: "JetBrainsMono Nerd Font"
                         font.weight: 200
                         elide: Text.ElideRight
                         Layout.fillWidth: true
@@ -280,7 +280,7 @@ Item {
             Text {
                 text: root.formatTime(root.activePlayer.position) || "0:00" 
                 color: "#a89984"
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 14
             }
         
@@ -332,7 +332,7 @@ Item {
             Text {
                 text: root.formatTime(root.activePlayer.length - root.activePlayer.position) || "0:00"
                 color: "#a89984"
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 14
             }
         }

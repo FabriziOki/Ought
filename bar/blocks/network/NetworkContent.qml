@@ -149,7 +149,7 @@ Item {
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: -15
+                    spacing: -10
 
                     // ── Top Row: "Ethernet" + Status ──
                     RowLayout {
@@ -160,7 +160,7 @@ Item {
                             text: "Ethernet"
                             color: root.wiredStatus === "connected" ? "#bdae93" : "#80bdae93"
                             Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
-                            font.family: "JetBrains Mono"
+                            font.family: "JetBrainsMono Nerd Font"
                             font.pixelSize: 22
                             font.weight: root.wiredStatus === "connected" ? 600 : 200
                             Behavior on font.weight { NumberAnimation { duration: 200; easing.type: Easing.InOutBounce } }
@@ -176,11 +176,11 @@ Item {
                             Behavior on Layout.preferredWidth { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                             Text {
-                                text: ""
+                                text: ""
                                 color: root.wiredStatus === "connected" ? "#79740e" : "#80bdae93"
                                 Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
-                                font.family: "JetBrains Mono"
-                                font.pixelSize: 14
+                                font.family: "JetBrainsMono Nerd Font"
+                                font.pixelSize: 10
                                 font.weight: root.wiredStatus === "connected" ? 600 : 200
                                 Behavior on font.weight { NumberAnimation { duration: 200; easing.type: Easing.InOutBounce } }
                             }
@@ -193,7 +193,7 @@ Item {
                                 }
                                 color: root.wiredStatus === "connected" ? "#79740e" : "#80bdae93"
                                 Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
-                                font.family: "JetBrains Mono"
+                                font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 18
                                 font.weight: 200
                             }
@@ -219,15 +219,15 @@ Item {
                             text: "󱎔"
                             color: root.wiredStatus === "connected" ? "#928374" : "#80bdae93"
                             Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
-                            font.family: "JetBrains Mono"
-                            font.pixelSize: 32
+                            font.family: "JetBrainsMono Nerd Font"
+                            font.pixelSize: 24
                         }
 
                         Text {
                             text: root.wiredInterface
                             color: root.wiredStatus === "connected" ? "#928374" : "#80bdae93"
                             Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.InOutBounce } }
-                            font.family: "JetBrains Mono"
+                            font.family: "JetBrainsMono Nerd Font"
                             font.pixelSize: 18
                         }
                     }
@@ -266,7 +266,7 @@ Item {
                 Text {
                     text: "Wi-Fi"
                     color: root.connectionStatus === "connected" ? "#bdae93" : "#80bdae93"
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 22
                     font.weight: root.connectionStatus === "connected" ? 600 : 200
                 }
@@ -339,7 +339,7 @@ Item {
                             return "Unavailable"
                         }
                         color: root.connectionStatus === "connected" ? "#bdae93" : "#80bdae93"
-                        font.family: "JetBrains Mono"
+                        font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 20
                         font.weight: root.connectionStatus === "connected" ? 400 : 200
                     }
@@ -347,7 +347,7 @@ Item {
                     Text {
                         text: root.connectionStatus === "connected" ? WifiSecurityType.toString(root.currentWifiNetwork.securiy) : ""
                         color: "#80a89984"
-                        font.family: "JetBrains Mono"
+                        font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 12
                         font.weight: 200
                     }
@@ -385,7 +385,7 @@ Item {
             Text {
                 text: "Available Networks"
                 color: "#a0a89984"
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 14
                 font.weight: 200
             }
@@ -419,7 +419,7 @@ Item {
                 anchors.centerIn: parent
                 text: "Wi-Fi is turned off"
                 color: "#80a89984"
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 16
                 visible: !root.isWifiConnected
             }
@@ -435,7 +435,7 @@ Item {
                 Text {
                     text: "Scanning..."
                     color: "#80a89984"
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 22
                 }
             }
@@ -501,13 +501,13 @@ Item {
                             Text {
                                 text: netItem.modelData.name
                                 color: "#bdae93"
-                                font.family: "JetBrains Mono"
+                                font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 16
                             }
                             Text {
                                 text: netItem.isSecured ? WifiSecurityType.toString(netItem.modelData.security) : "Open"
                                 color: "#80a89984"
-                                font.family: "JetBrains Mono"
+                                font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 12
                                 font.weight: 200
                             }

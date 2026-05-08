@@ -94,7 +94,7 @@ Item {
                             easing.type: Easing.InOutBounce
                         }
                     }
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 24
                 }
 
@@ -110,7 +110,7 @@ Item {
                 Text {
                     text: root.isCharging ? root.formatTime(root.battery.timeToFull) : root.formatTime(root.battery.timeToEmpty)
                     color: "#a89984" // Muted Gruvbox text
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 20
                     font.weight: 200
                     visible: root.battery.state === UPowerDeviceState.Charging || root.battery.state === UPowerDeviceState.Discharging
@@ -200,7 +200,7 @@ Item {
                 text: btn.labelText
                 // Dark text on the active orange pill, standard warm text otherwise
                 color: btn.isActive ? "#ebdbb2" : (hoverHandler.hovered ? "#ebdbb2" : "#bdae93")
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 13
                 font.weight: btn.isActive ? Font.Bold : Font.Normal
                 Behavior on color { ColorAnimation { duration: 200 } }

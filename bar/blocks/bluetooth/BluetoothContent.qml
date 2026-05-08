@@ -82,7 +82,7 @@ Item {
                 Text {
                     text: "Bluetooth"
                     color: root.btStatus ? "#bdae93" : "#80bdae93"
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 20
                     font.weight: root.btStatus ? 600 : 200
                 }
@@ -110,7 +110,7 @@ Item {
                 anchors.centerIn: parent
                 text: "Bluetooth is turned off"
                 color: "#80a89984"
-                font.family: "JetBrains Mono"
+                font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 16
             }
         }
@@ -130,7 +130,7 @@ Item {
                 Text {
                     text: "Trusted Devices"
                     color: "#a89984"
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 14
                     font.weight: 200
                 }
@@ -202,7 +202,7 @@ Item {
                                     Text {
                                         text: modelData.name || "Unknown Device"
                                         color: "#bdae93"
-                                        font.family: "JetBrains Mono"
+                                        font.family: "JetBrainsMono Nerd Font"
                                         font.pixelSize: 16
                                         elide: Text.ElideRight
                                         Layout.maximumWidth: 260
@@ -211,7 +211,7 @@ Item {
                                         // Changed from modelData.mac to modelData.address to match API
                                         text: modelData.address 
                                         color: "#80a89984"
-                                        font.family: "JetBrains Mono"
+                                        font.family: "JetBrainsMono Nerd Font"
                                         font.pixelSize: 12
                                     }
                                 }
@@ -290,7 +290,7 @@ Item {
                                         anchors.leftMargin: 10
                                         text: modelData.connected ? "Disconnect" : "Connect"
                                         color: action1Mouse.containsMouse ? "#ebdbb2" : "#bdae93"
-                                        font.family: "JetBrains Mono"
+                                        font.family: "JetBrainsMono Nerd Font"
                                     }
 
                                     MouseArea {
@@ -319,7 +319,7 @@ Item {
                                         anchors.leftMargin: 10
                                         text: "Forget Device"
                                         color: action2Mouse.containsMouse ? "#cc241d" : "#fb4934" // Red for danger
-                                        font.family: "JetBrains Mono"
+                                        font.family: "JetBrainsMono Nerd Font"
                                     }
 
                                     MouseArea {
@@ -347,7 +347,7 @@ Item {
                 Text {
                     text: "Available Devices"
                     color: "#a89984"
-                    font.family: "JetBrains Mono"
+                    font.family: "JetBrainsMono Nerd Font"
                     font.pixelSize: 14
                     font.weight: 200
                 }
@@ -431,7 +431,7 @@ Item {
                             Text {
                                 text: modelData.name || "Unknown Device"
                                 color: "#bdae93"
-                                font.family: "JetBrains Mono"
+                                font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 16
                                 elide: Text.ElideRight
                                 Layout.maximumWidth: 260
@@ -439,7 +439,7 @@ Item {
                             Text {
                                 text: modelData.address 
                                 color: "#80a89984"
-                                font.family: "JetBrains Mono"
+                                font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 12
                             }
                         }

@@ -65,51 +65,51 @@ BarBlock {
         implicitWidth: 36
         implicitHeight: 36
 
-        WavyCircle {
-            anchors.centerIn: parent
-            width: 30; height: 30
-            fillColor: {
-                if (root.status && root.currentPlayer === "spotify")       return root.colorSpotifyOut
-                if (root.status && root.currentPlayer.includes("zen")) return root.colorZenOut
-                return root.colorIdleDim
-            }
-            Behavior on fillColor { ColorAnimation { duration: 200; easing.type: Easing.InOutQuad } }
-            waves: 9; waveAmplitude: 1; baseRadius: 15
-            isSpinning: root.status; spinDuration: 10000
-            opacity: {
-                if(root.status)
-                    return 1  
-                if(!root.status && Mpris.players.values.length)
-                    return 0.33
-                if(!Mpris.players.values.length)
-                    return 0
-            } 
-            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
-            isBreathing: root.status; minAmplitude: 0.75; maxAmplitude: 2; breathDuration: 1500
-        }
+        // WavyCircle {
+        //     anchors.centerIn: parent
+        //     width: 30; height: 30
+        //     fillColor: {
+        //         if (root.status && root.currentPlayer === "spotify")       return root.colorSpotifyOut
+        //         if (root.status && root.currentPlayer.includes("zen")) return root.colorZenOut
+        //         return root.colorIdleDim
+        //     }
+        //     Behavior on fillColor { ColorAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+        //     waves: 9; waveAmplitude: 1; baseRadius: 15
+        //     isSpinning: root.status; spinDuration: 10000
+        //     opacity: {
+        //         if(root.status)
+        //             return 1  
+        //         if(!root.status && Mpris.players.values.length)
+        //             return 0.33
+        //         if(!Mpris.players.values.length)
+        //             return 0
+        //     } 
+        //     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+        //     isBreathing: root.status; minAmplitude: 0.75; maxAmplitude: 2; breathDuration: 1500
+        // }
 
-        WavyCircle {
-            anchors.centerIn: parent
-            width: 30; height: 30
-            fillColor: {
-                if (root.status && root.currentPlayer === "spotify")       return root.colorSpotifyIn
-                if (root.status && root.currentPlayer.includes("zen")) return root.colorZenIn
-                return root.colorIdle
-            }
-            Behavior on fillColor { ColorAnimation { duration: 200; easing.type: Easing.InOutQuad } }
-            waves: 9; waveAmplitude: 1.5; baseRadius: 10
-            isSpinning: root.status; spinDuration: 7500
-            opacity: {
-                if(root.status)
-                    return 1  
-                if(!root.status && Mpris.players.values.length)
-                    return 0.33
-                if(!Mpris.players.values.length)
-                    return 0
-            } 
-            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
-            isBreathing: root.status; minAmplitude: 0.5; maxAmplitude: 3; breathDuration: 1500
-        }
+        // WavyCircle {
+        //     anchors.centerIn: parent
+        //     width: 30; height: 30
+        //     fillColor: {
+        //         if (root.status && root.currentPlayer === "spotify")       return root.colorSpotifyIn
+        //         if (root.status && root.currentPlayer.includes("zen")) return root.colorZenIn
+        //         return root.colorIdle
+        //     }
+        //     Behavior on fillColor { ColorAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+        //     waves: 9; waveAmplitude: 1.5; baseRadius: 10
+        //     isSpinning: root.status; spinDuration: 7500
+        //     opacity: {
+        //         if(root.status)
+        //             return 1  
+        //         if(!root.status && Mpris.players.values.length)
+        //             return 0.33
+        //         if(!Mpris.players.values.length)
+        //             return 0
+        //     } 
+        //     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+        //     isBreathing: root.status; minAmplitude: 0.5; maxAmplitude: 3; breathDuration: 1500
+        // }
 
         Image{
             anchors.centerIn: parent
