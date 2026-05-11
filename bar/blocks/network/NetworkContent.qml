@@ -60,29 +60,29 @@ Item {
 
     property var currentWifiNetwork: {
         const nets = wifiDevice?.networks?.values ?? []
-        return nets.find(n => n.state === NetworkState.Connected) ?? null
+        return nets.find(n => n.state === ConnectionState.Connected) ?? null
     }
 
     // Null-guarded connection status
     readonly property string connectionStatus: {
         if (!wifiDevice) return "unavailable"
         const s = wifiDevice.state
-        if (s === DeviceConnectionState.Connected)    return "connected"
-        if (s === DeviceConnectionState.Connecting)   return "connecting"
-        if (s === DeviceConnectionState.Disconnected) return "disconnected"
+        if (s === ConnectionState.Connected)    return "connected"
+        if (s === ConnectionState.Connecting)   return "connecting"
+        if (s === ConnectionState.Disconnected) return "disconnected"
         return "unavailable"
     }
 
     readonly property string ssid:           currentWifiNetwork?.name ?? ""
     readonly property int    signalStrength: Math.round((currentWifiNetwork?.signalStrength ?? 0) * 100)
 
-    property bool isWifiConnected: wifiDevice?.state === DeviceConnectionState.Connected ?? false
+    property bool isWifiConnected: wifiDevice?.state === ConnectionState.Connected ?? false
 
     // ── Available networks — at root so onAvailableNetworksChanged fires ─────
     property var availableNetworks: {
         const nets = wifiDevice?.networks?.values ?? []
         return nets
-            .filter(n => n.state !== NetworkState.Connected)
+            .filter(n => n.state !== ConnectionState.Connected)
             .sort((a, b) => b.signalStrength - a.signalStrength)
     }
 
@@ -283,7 +283,7 @@ Item {
 
                 ToggleSwitch {
                     id: wifiToggle
-                    checked: root.wifiDevice.state === DeviceConnectionState.Connected
+                    checked: root.wifiDevice.state === ConnectionState.Connected
                     onToggled: newState => {
                         wifiToggleCmd.command = ["nmcli", "radio", "wifi", newState ? "on" : "off"]
                         wifiToggleCmd.running = true

@@ -21,7 +21,7 @@ BarBlock {
     }
     property var currentWifiNetwork: {
         const wnets = wifiDevice?.networks?.values ?? [];
-        let cwn = wnets.find(c => c.state === NetworkState.Connected)
+        let cwn = wnets.find(c => c.state === ConnectionState.Connected)
         if (cwn) return cwn;
         return null;
     }
@@ -204,7 +204,7 @@ BarBlock {
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 source: `file://${root.iconPath}network-wireless-acquiring.svg`
-                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === DeviceConnectionState.Connecting) ? 1 : 0
+                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === ConnectionState.Connecting) ? 1 : 0
                 Behavior on opacity {
                     NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
                 }
@@ -215,8 +215,8 @@ BarBlock {
                 sourceSize: Qt.size(28, 28)
                 fillMode: Image.PreserveAspectFit
                 smooth: true
-                source: `file://${root.iconPath}network-wireless-offline.svg`
-                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === DeviceConnectionState.Disconnected) ? 1 : 0
+                // source: `file://${root.iconPath}network-wireless-disconnected.svg`
+                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === ConnectionState.Disconnected) ? 1 : 0
                 Behavior on opacity {
                     NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
                 }
@@ -227,8 +227,8 @@ BarBlock {
                 sourceSize: Qt.size(28, 28)
                 fillMode: Image.PreserveAspectFit
                 smooth: true
-                source: `file://${root.iconPath}state-offline.svg`
-                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === DeviceConnectionState.Unknown) ? 1 : 0
+                // source: `file://${root.iconPath}state-offline.svg`
+                opacity: (!root.ethernetDevice && !root.ethernetConnecting && root.wifiDevice?.state === ConnectionState.Unknown) ? 1 : 0
                 Behavior on opacity {
                     NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
                 }
